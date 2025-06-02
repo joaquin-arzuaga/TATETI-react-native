@@ -1,60 +1,35 @@
 import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
-import { useState } from "react";
+import useTaTeTi from "./useTaTeTi";
+
+
+
 
 function TATETI() {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [turn, setTurn] = useState(0);
+  const { handlePress, board, winner, turn, resetGame } = useTaTeTi();
 
-  const handlePress = (index) => {
-    if (board[index] !== null) return;
-
-    const newBoard = [...board];
-    newBoard[index] = turn % 2 === 0 ? 'X' : 'O';
-    setBoard(newBoard);
-    setTurn(turn + 1);
-
-    const winner = checkWinner(newBoard);
-    if (winner) {
-      Alert.alert('¡Tenemos un ganador!', `Ganó: ${winner}`, [
-        { text: 'Reiniciar', onPress: resetGame }
-      ]);
-    } else if (turn === 8) {
-      Alert.alert('Empate', 'Nadie ganó.', [{ text: 'Reiniciar', onPress: resetGame }]);
-    }
-  };
-
-  const checkWinner = (board) => {
-    const combos = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // filas
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // columnas
-      [0, 4, 8], [2, 4, 6],           // diagonales
-    ];
-
-    for (const [a, b, c] of combos) {
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        return board[a];
-      }
-    }
-
-    return null;
-  };
-
-  const resetGame = () => {
-    setBoard(Array(9).fill(null));
-    setTurn(0);
-  };
+  // Dejamos esta lógica aquí ya que por el momento es la única forma de renderizar una victoria que tenemos, pero lo más
+  // correcto sería crear un componente en el cuál estén implementadas las distintas formas de renderizar una victoria.
+  if (winner) {
+    Alert.alert('¡Tenemos un ganador!', `Ganó: ${winner}`, [
+      { text: 'Reiniciar', onPress: resetGame }
+    ]);
+  } else if (turn === 8) {
+    Alert.alert('Empate', 'Nadie ganó.', [{ text: 'Reiniciar', onPress: resetGame }]);
+  }
 
   return (
-    <View style={styles.container}>        
+    <View style={styles.container}>
       {board.map((cell, index) => (
-      <TouchableOpacity
-        style={styles.button}
-        key={index}
-        onPress={() => handlePress(index)}
-      >
-        <Text style={styles.buttonText }>{cell}</Text>
-      </TouchableOpacity>
-    ))}</View>
+        <TouchableOpacity
+          style={styles.button}
+          key={index}
+          onPress={() => {
+            handlePress(index);
+          }}
+        >
+          <Text style={styles.buttonText}>{cell}</Text>
+        </TouchableOpacity>
+      ))}</View>
   )
 }
 
